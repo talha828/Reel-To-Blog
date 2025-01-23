@@ -1,0 +1,3 @@
+{
+  "text" : "flutter development is fully supported and vs code android studio and intelligent idea providing development teams have a choice of id ease for a productive workflow with stateful hot reload you instantly see a change the moment you save it transforms minutes long development loops into sub-second iterations the seemingly simple feature has a profound impact not just on development speed but on the developer morality the tooling a language features of enable teams like universal to see forty four percent faster release cycle since migrate into fluttered and zalmi auto an electric vehicle manufacturer to deliver their new car companion app with a team of forty five people"
+}
