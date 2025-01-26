@@ -13,7 +13,13 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from PIL import Image
-
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+import time
+import re
 
 # Constants
 SCOPES = ['https://www.googleapis.com/auth/blogger']
@@ -48,7 +54,6 @@ def get_blog_id(service):
         print("No blogs found.")
         return None
 
-
 def create_blog_post(service, blog_id, title, content, image_base64):
     """Create a new blog post on Google Blogger with proper formatting."""
     # Remove underscores from the main title
@@ -69,7 +74,7 @@ def create_blog_post(service, blog_id, title, content, image_base64):
         <img src="data:image/jpeg;base64,{image_base64}" alt="Thumbnail" style="max-width: 100%; height: auto; border-radius: 10px;"/>
     </div>
     <h2 style="text-align: center; font-size: 1.5em; margin-bottom: 20px;">{subheading}</h2>
-    <p></p>
+    <p>\n</p>
     <div style="font-size: 1.2em; line-height: 1.6;">
         {body}
     </div>
@@ -118,9 +123,7 @@ def extract_audio_from_video(video_path, output_audio_path):
     except subprocess.CalledProcessError as e:
         print(f"Error extracting audio: {e}")
 
-from PIL import Image
-
-def resize_and_crop_image(image_path, output_path, target_width=1200, target_height=675):
+def resize_and_crop_image(image_path, output_path, target_width=768, target_height=432):
     """
     Resize and crop an image to fit a landscape aspect ratio.
     Args:
@@ -163,7 +166,7 @@ def resize_and_crop_image(image_path, output_path, target_width=1200, target_hei
         cropped_img.save(output_path)
         print(f"Resized and cropped image saved to {output_path}")
 
-def extract_random_frames(video_path, num_frames=5,target_width=1200, target_height=675):
+def extract_random_frames(video_path, num_frames=5):
     """Extract random frames from the video and return their file paths."""
     reader = imageio.get_reader(video_path)
     frame_count = reader.count_frames()
@@ -211,7 +214,7 @@ def generate_blog_with_ollama(transcript, model_name="llama3.2"):
         messages=[{
             'role': 'user',
             'content': f"Create a short blog based on the following transcript:\n{transcript}. "
-                       f"It should have two things: title and body. Use easy English and write in a friendly way."
+                       f"It should have two things: title and body. Use easy English and write in a friendly way with some emoji."
         }],
     )
     if response and response.message:
@@ -241,16 +244,29 @@ def encode_image_to_base64(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-def main():
-    # Input: YouTube or Instagram link
-    video_link = "https://www.youtube.com/shorts/YCWredszNd4"
+def read_links_from_file(file_path):
+    """Read YouTube Shorts links from a file."""
+    with open(file_path, "r") as file:
+        links = [line.strip() for line in file if line.strip()]
+    return links
+
+def sanitize_filename(filename):
+    """Sanitize the filename by removing invalid characters."""
+    # Replace invalid characters with an underscore
+    sanitized = re.sub(r'[<>:"/\\|?*\x00-\x1F]', '_', filename)
+    # Remove emojis and other non-ASCII characters
+    sanitized = sanitized.encode('ascii', 'ignore').decode('ascii')
+    return sanitized
+
+def process_video(video_link):
+    """Process a single video link."""
     video_path, title, video_id = download_video(video_link)
 
     if not video_path or not title:
-        print("Error: Could not download video.")
+        print(f"Error: Could not download video from {video_link}.")
         return
 
-    title = title.replace(" ", "_")  # Sanitize title for file naming
+    title = sanitize_filename(title.replace(" ", "_")).replace(" ", "_")  # Sanitize title for file naming
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # Add timestamp for uniqueness
     unique_id = f"{title}_{video_id}_{timestamp}"  # Combine title, video ID, and timestamp
 
@@ -292,13 +308,80 @@ def main():
                 return
 
             print("Creating blog post...")
-            create_blog_post(service, blog_id, title,blog,base64_image)
+            create_blog_post(service, blog_id, title, blog, base64_image)
 
     # Cleanup temporary files
     os.remove(audio_path)
     os.remove(video_path)
 
-    print("Process completed successfully!")
+    print(f"Process completed for video: {video_link}")
+
+def scrape_shorts_links(channel_url, max_links=100):
+    """Scrape YouTube Shorts links from a channel."""
+    # Set up Selenium WebDriver
+    option = Options()
+    option.add_experimental_option("detach", True)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=option)
+
+    # Open the channel's Shorts page
+    driver.get(f"{channel_url}/shorts")
+
+    # Scroll to load more videos
+    last_height = driver.execute_script("return document.documentElement.scrollHeight")
+    shorts_links = []
+
+    while len(shorts_links) < max_links:
+        driver.execute_script("window.scrollTo(0, document.documentElement.scrollHeight);")
+        time.sleep(2)  # Wait for new videos to load
+
+        # Extract video links using the specific class
+        videos = driver.find_elements(By.CSS_SELECTOR, "a.shortsLockupViewModelHostEndpoint.reel-item-endpoint")
+        for video in videos:
+            href = video.get_attribute("href")
+            if href and "/shorts/" in href and href not in shorts_links:
+                shorts_links.append(href)
+                if len(shorts_links) >= max_links:
+                    break
+
+        # Break if no new content is loaded
+        new_height = driver.execute_script("return document.documentElement.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
+
+    driver.quit()
+    return shorts_links
+
+def save_links_to_file(links, filename="shorts_links.txt"):
+    """Save the list of links to a file."""
+    with open(filename, "w") as file:
+        for link in links:
+            file.write(link + "\n")
+    print(f"Saved {len(links)} links to {filename}")
+
+def main():
+    print("Welcome to the YouTube Shorts to Blog Converter!")
+    choice = input("Do you want to scrape a YouTube channel for Shorts links or create a single blog post? (scrape/single): ").strip().lower()
+
+    if choice == "scrape":
+        channel_url = input("Enter the YouTube channel URL (e.g., https://www.youtube.com/@zackdfilms): ").strip()
+        max_links = int(input("Enter the maximum number of Shorts links to scrape (e.g., 50): ").strip())
+        print("Scraping Shorts links...")
+        shorts_links = scrape_shorts_links(channel_url, max_links=max_links)
+        save_links_to_file(shorts_links)
+        print("Starting blog creation process...")
+        for video_link in shorts_links:
+            print(f"Processing video: {video_link}")
+            process_video(video_link)
+    elif choice == "single":
+        video_link = input("Enter the YouTube Shorts link: ").strip()
+        if "/shorts/" not in video_link:
+            print("Error: Please provide a valid YouTube Shorts link.")
+            return
+        print("Starting blog creation process...")
+        process_video(video_link)
+    else:
+        print("Invalid choice. Please enter 'scrape' or 'single'.")
 
 if __name__ == "__main__":
     main()
