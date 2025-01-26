@@ -2,13 +2,44 @@
 
 This Python script allows you to convert YouTube Shorts videos into blog posts automatically. It downloads the video, extracts audio, transcribes it, generates a blog using the Ollama language model, and posts it to Google Blogger with an embedded thumbnail. This tool is perfect for micro-learning and micro-earning by leveraging free tools like Google Blogger for monetization.
 
+
+
+## How the Script Works
+
+The script follows a step-by-step process to convert YouTube Shorts videos into blog posts:
+
+### 1. **Download the Video**
+   - The script uses the `yt-dlp` library to download the YouTube Shorts video in MP4 format.
+   - The video title and ID are extracted for naming and identification purposes.
+
+### 2. **Extract Audio**
+   - The script uses **MoviePy** to extract audio from the downloaded video.
+   - The audio is saved as a `.wav` file for transcription.
+
+### 3. **Transcribe Audio to Text**
+   - The script uses the **Vosk** open-source speech recognition model to transcribe the audio into text.
+   - Vosk supports multiple languages and provides accurate transcriptions.
+
+### 4. **Generate Blog Content**
+   - The transcribed text is passed to the **Ollama language model** (version 3.2) to generate a blog post.
+   - The blog includes a title and body, written in a friendly and easy-to-understand style.
+
+### 5. **Extract Random Frames**
+   - The script extracts random frames from the video using the `imageio` library.
+   - These frames are resized and cropped to fit a landscape aspect ratio.
+
+### 6. **Post to Google Blogger**
+   - The script authenticates with the Google Blogger API using OAuth 2.0.
+   - It creates a new blog post with the generated content and embeds the first frame as a thumbnail.
+   - The blog post is published to your Blogger account.
+
 ---
 
 ## Features
 
 1. **Automated Blog Creation**:
    - Converts YouTube Shorts videos into blog posts with minimal user input.
-   - Generates a blog title and body using the Ollama language model.
+   - Generates a blog title and body using the **Ollama language model**.
 
 2. **Micro-Learning**:
    - Transcribes video content into text for easy reading and learning.
@@ -78,8 +109,8 @@ pip install -r requirements.txt
 ### Step 2: Configure the Script
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/youtube-shorts-to-blog.git
-   cd youtube-shorts-to-blog
+   git clone https://github.com/talha828/Reel-To-Blog.git
+   cd Reel-To-Blog
    ```
 2. Install the required Python libraries:
    ```bash
@@ -100,7 +131,8 @@ pip install -r requirements.txt
 
 3. The script will:
    - Download the video.
-   - Extract audio and transcribe it.
+   - Extract audio using **MoviePy**.
+   - Transcribe the audio using the **Vosk** open-source model.
    - Generate a blog using Ollama.
    - Post the blog to Google Blogger with an embedded thumbnail.
 
@@ -117,7 +149,7 @@ pip install -r requirements.txt
 - Earn through Google AdSense by driving traffic to your blog.
 
 ### 3. **Free Tools**
-- Uses free tools like Google Blogger, Ollama, and FFmpeg.
+- Uses free tools like Google Blogger, Ollama, MoviePy, and Vosk.
 - No additional costs for software or APIs (except YouTube API if used).
 
 ### 4. **Time-Saving**
@@ -174,3 +206,7 @@ If you find this project helpful, consider giving it a ⭐ on GitHub. For questi
 ---
 
 Happy blogging! 🚀
+
+---
+
+This version clearly explains how the script works, including the use of **MoviePy** and **Vosk**, while keeping the **Features** section concise. Let me know if you need further adjustments! 😊
