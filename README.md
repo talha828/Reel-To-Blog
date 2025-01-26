@@ -1,104 +1,176 @@
-# Reel-to-Blog
+# YouTube Shorts to Blog Converter
 
-**Reel-to-Blog** is a Python script that transforms video content into blogs by:
-1. Extracting audio from video files.
-2. Transcribing the audio to text using SpeechRecognition.
-3. Generating a blog from the transcript using the Ollama Python library.
-
-This project is perfect for converting video reels into easily shareable written content, written in friendly and easy English.
+This Python script allows you to convert YouTube Shorts videos into blog posts automatically. It downloads the video, extracts audio, transcribes it, generates a blog using the Ollama language model, and posts it to Google Blogger with an embedded thumbnail. This tool is perfect for micro-learning and micro-earning by leveraging free tools like Google Blogger for monetization.
 
 ---
 
 ## Features
-- Extract audio from video files (`.mp4` to `.wav`).
-- Transcribe audio to text using the Vosk engine (via SpeechRecognition).
-- Generate a blog with a **title** and **body** using the Ollama AI model.
-- Save the transcript and blog to text files for further use.
+
+1. **Automated Blog Creation**:
+   - Converts YouTube Shorts videos into blog posts with minimal user input.
+   - Generates a blog title and body using the Ollama language model.
+
+2. **Micro-Learning**:
+   - Transcribes video content into text for easy reading and learning.
+   - Ideal for creating educational content from short videos.
+
+3. **Micro-Earning**:
+   - Automatically posts blogs to Google Blogger, enabling monetization through ads.
+   - Free to use with no additional costs for tools (except YouTube API if used).
+
+4. **Customizable**:
+   - Supports scraping multiple Shorts links from a YouTube channel.
+   - Allows processing a single video link for quick blog creation.
+
+5. **Open Source**:
+   - Free to use, modify, and distribute.
 
 ---
 
-## Requirements
-Before using this script, make sure you have the following installed:
+## Prerequisites
 
-### Python Libraries:
-- `moviepy`
-- `speechrecognition`
-- `ollama`
+Before using this script, ensure you have the following installed and set up:
 
-### Additional Dependencies:
-- A compatible Ollama model (e.g., `llama3.2`) pre-installed.
+### 1. **FFmpeg**
+FFmpeg is required to extract audio from videos. Install it using the following steps:
+
+- **Windows**:
+  1. Download FFmpeg from [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html).
+  2. Extract the downloaded zip file.
+  3. Add the `bin` folder to your system's PATH environment variable.
+
+- **Linux**:
+  ```bash
+  sudo apt update
+  sudo apt install ffmpeg
+  ```
+
+- **macOS**:
+  ```bash
+  brew install ffmpeg
+  ```
+
+### 2. **Ollama 3.2**
+Ollama is used to generate blog content from video transcripts. Install it as follows:
+
+1. Visit the [Ollama GitHub repository](https://github.com/ollama/ollama) for installation instructions.
+2. Download and install Ollama for your operating system.
+3. Ensure the Ollama server is running locally.
+
+### 3. **Python Dependencies**
+Install the required Python libraries using `pip`:
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## Installation
+## How to Use
+
+### Step 1: Set Up Google Blogger API
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a new project.
+3. Enable the **Blogger API** for your project.
+4. Create OAuth 2.0 credentials and download the `credentials.json` file.
+5. Place the `credentials.json` file in the project directory.
+
+### Step 2: Configure the Script
 1. Clone this repository:
    ```bash
-   git clone https://github.com/talha828/Reel-To-Blog.git
-   cd Reel-To-Blog
+   git clone https://github.com/your-username/youtube-shorts-to-blog.git
+   cd youtube-shorts-to-blog
    ```
-
-2. Install the required libraries:
+2. Install the required Python libraries:
    ```bash
-   pip install moviepy speechrecognition
+   pip install -r requirements.txt
    ```
 
-3. Ensure Ollama is installed and running. Follow the [Ollama installation guide](https://ollama.ai/docs).
-
----
-
-## Usage
-1. Place your video file in the `video` directory.
-2. Edit the `video_path` in the `main()` function to match your video file's location:
-   ```python
-   video_path = 'C:\\Users\\talha\\PycharmProjects\\ReelToVlog\\video\\videoplayback.mp4'
-   ```
-
-3. Run the script:
+### Step 3: Run the Script
+1. Run the script:
    ```bash
-   python script.py
+   python main.py
    ```
+2. Choose one of the following options:
+   - **Scrape a YouTube Channel**:
+     - Enter the YouTube channel URL (e.g., `https://www.youtube.com/@zackdfilms`).
+     - Specify the number of Shorts links to scrape.
+   - **Create a Single Blog Post**:
+     - Provide a YouTube Shorts link directly.
 
-4. The script performs the following steps:
-   - Extracts audio from the video file (`extracted_audio.wav`).
-   - Transcribes the audio to a text file (`transcript.txt`).
-   - Generates a blog with a title and body, saving it to a file (`blog.txt`).
-
----
-
-## Output
-After running the script, you’ll find the following files:
-1. `extracted_audio.wav` – The extracted audio from the video.
-2. `transcript.txt` – The transcript of the audio.
-3. `blog.txt` – The blog content generated by the Ollama model.
-
----
-
-## Example Blog Output
-Here's an example of a generated blog:
-
-**Title**: How to Stay Motivated  
-**Body**: Staying motivated is easier than you think. Start with small steps, celebrate your progress, and remember why you started. Every day is a new opportunity to move forward. Let's achieve greatness together!
+3. The script will:
+   - Download the video.
+   - Extract audio and transcribe it.
+   - Generate a blog using Ollama.
+   - Post the blog to Google Blogger with an embedded thumbnail.
 
 ---
 
-## License
-This project is licensed under the MIT License.
+## Benefits
+
+### 1. **Micro-Learning**
+- Convert short, engaging videos into readable blog posts.
+- Ideal for summarizing educational content or tutorials.
+
+### 2. **Micro-Earning**
+- Automatically post blogs to Google Blogger for monetization.
+- Earn through Google AdSense by driving traffic to your blog.
+
+### 3. **Free Tools**
+- Uses free tools like Google Blogger, Ollama, and FFmpeg.
+- No additional costs for software or APIs (except YouTube API if used).
+
+### 4. **Time-Saving**
+- Automates the entire process of downloading, transcribing, and posting.
+- Focus on creating content while the script handles the rest.
+
+---
+
+## Example Workflow
+
+1. **Scrape a YouTube Channel**:
+   - Input: `https://www.youtube.com/@zackdfilms`
+   - Output: 50 Shorts links scraped and processed into blog posts.
+
+2. **Create a Single Blog Post**:
+   - Input: `https://www.youtube.com/shorts/PZ3EInK8eRU`
+   - Output: A blog post titled "Why Do Nose Bleeds Happen?" with transcribed content.
+
+---
+
+## Troubleshooting
+
+### 1. **Invalid File Path Error**
+- Ensure the video title does not contain invalid characters (e.g., `?`, `!`, emojis). The script automatically sanitizes file names.
+
+### 2. **Ollama Not Running**
+- Start the Ollama server locally before running the script.
+
+### 3. **FFmpeg Not Found**
+- Verify that FFmpeg is installed and added to your system's PATH.
+
+### 4. **Google Blogger API Issues**
+- Ensure the `credentials.json` file is correctly placed in the project directory.
+- Authenticate using the OAuth flow when prompted.
 
 ---
 
 ## Contributing
-Feel free to fork the repository, open issues, or submit pull requests for improvements or new features.
+
+Contributions are welcome! If you have suggestions or improvements, feel free to open an issue or submit a pull request.
 
 ---
 
-## Author
-**Talha Iqbal**  
-[GitHub](https://github.com/talha828) | [LinkedIn](https://linkedin.com/in/talha828)
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Disclaimer
-This script uses third-party services (like Ollama) for blog generation. Ensure proper API credentials and terms of use compliance before using this code for production.
-```
+## Support
 
-This `README.md` is formatted for GitHub, with clear sections for setup, usage, and output examples. Let me know if you’d like any changes! 😊
+If you find this project helpful, consider giving it a ⭐ on GitHub. For questions or issues, open an issue in the repository.
+
+---
+
+Happy blogging! 🚀
