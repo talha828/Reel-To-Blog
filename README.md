@@ -1,3 +1,7 @@
+
+![CheatBoard 1](https://github.com/user-attachments/assets/3e6b96a1-eba8-459a-bd55-eb72ec5cadf7)
+
+
 # YouTube Shorts to Blog Converter
 
 This Python script allows you to convert YouTube Shorts videos into blog posts automatically. It downloads the video, extracts audio, transcribes it, generates a blog using the Ollama language model, and posts it to Google Blogger with an embedded thumbnail. This tool is perfect for micro-learning and micro-earning by leveraging free tools like Google Blogger for monetization.
