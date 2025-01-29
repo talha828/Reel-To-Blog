@@ -212,5 +212,3 @@ If you find this project helpful, consider giving it a ⭐ on GitHub. For questi
 Happy blogging! 🚀
 
 ---
-
-This version clearly explains how the script works, including the use of **MoviePy** and **Vosk**, while keeping the **Features** section concise. Let me know if you need further adjustments! 😊
