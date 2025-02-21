@@ -64,17 +64,17 @@ def create_blog_post(service, blog_id, title, content, image_base64):
         subheading = content.split("**Title:**")[1].split("**Body:**")[0].strip()
         body = content.split("**Body:**")[1].strip()
     else:
-        subheading = ""
-        body = content
+        cleaned_content = content.replace("*", "")
+        subheading = cleaned_content.split("\n\n")[0].strip()
+        body = "\n\n".join(cleaned_content.split("\n\n")[1:]).strip()
+
 
     # HTML template for the blog post
     blog_content = f"""
-    <h1 style="text-align: center; font-size: 2em; margin-bottom: 20px;">{main_title}</h1>
+    <h1 style="text-align: center; font-size: 1.5em; margin-bottom: 20px;">{subheading}</h1>\n
     <div style="text-align: center; margin-bottom: 20px;">
         <img src="data:image/jpeg;base64,{image_base64}" alt="Thumbnail" style="max-width: 100%; height: auto; border-radius: 10px;"/>
     </div>
-    <h2 style="text-align: center; font-size: 1.5em; margin-bottom: 20px;">{subheading}</h2>
-    <p>\n</p>
     <div style="font-size: 1.2em; line-height: 1.6;">
         {body}
     </div>
@@ -364,7 +364,7 @@ def main():
     choice = input("Do you want to scrape a YouTube channel for Shorts links or create a single blog post? (scrape/single): ").strip().lower()
 
     if choice == "scrape":
-        channel_url = input("Enter the YouTube channel URL (e.g., https://www.youtube.com/@zackdfilms): ").strip()
+        channel_url = input("Enter the YouTube channel URL (e.g., https://www.youtube.com/shorts/tov6JMAIUBU): ").strip()
         max_links = int(input("Enter the maximum number of Shorts links to scrape (e.g., 50): ").strip())
         print("Scraping Shorts links...")
         shorts_links = scrape_shorts_links(channel_url, max_links=max_links)
